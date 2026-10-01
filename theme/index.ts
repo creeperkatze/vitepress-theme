@@ -4,19 +4,19 @@ import { type Theme, useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { type Component, defineComponent, h, type VNode, watchEffect } from 'vue'
 
-import { createSiteI18n, type Messages } from '../i18n.ts'
+import { createSiteI18n, type Messages } from '../i18n'
 import DonateButton from './components/DonateButton.vue'
 import HeroLogo from './components/HeroLogo.vue'
 import Showcase, { type ShowcaseItem } from './components/Showcase.vue'
 import SiteFooter from './components/SiteFooter.vue'
 import StatsBar from './components/StatsBar.vue'
-import type { StatsLoader } from './stats.ts'
+import type { StatsLoader } from './stats'
 // Must come after the default theme so these rules win
 import './style.css'
 
-export type { Messages, Translate } from '../i18n.ts'
+export type { Messages, Translate } from '../i18n'
 export type { ShowcaseItem } from './components/Showcase.vue'
-export * from './stats.ts'
+export * from './stats'
 export { DonateButton, HeroLogo, Showcase, SiteFooter, StatsBar }
 
 export interface ThemeOptions {

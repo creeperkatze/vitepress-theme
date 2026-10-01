@@ -1,9 +1,7 @@
-import { fileURLToPath } from 'node:url'
-
 import svgLoader from 'vite-svg-loader'
 import { type DefaultTheme, type LocaleConfig, mergeConfig, type UserConfig } from 'vitepress'
 
-import { createSiteI18n, type Messages, type Translate } from './i18n.ts'
+import { createSiteI18n, type Messages, type Translate } from './i18n'
 
 export type { Messages, Translate }
 
@@ -35,9 +33,6 @@ export interface SiteOptions {
 }
 
 type Config = UserConfig<DefaultTheme.Config>
-
-const PACKAGE_NAME = '@creeperkatze/vitepress-theme'
-const PACKAGE_ROOT = fileURLToPath(new URL('..', import.meta.url))
 
 export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): Config {
 	const {
@@ -135,20 +130,8 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 				__VUE_I18N_LEGACY_API__: false,
 				__INTLIFY_PROD_DEVTOOLS__: false,
 			},
-			resolve: {
-				dedupe: ['vue'],
-			},
-			// A linked copy of the theme lives outside the site, so the dev server needs to serve it
-			server: {
-				fs: {
-					allow: [PACKAGE_ROOT],
-				},
-			},
-			optimizeDeps: {
-				exclude: [PACKAGE_NAME],
-			},
 			ssr: {
-				noExternal: ['vue-i18n', PACKAGE_NAME],
+				noExternal: ['vue-i18n'],
 			},
 		},
 		themeConfig: {

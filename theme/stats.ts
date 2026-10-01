@@ -1,4 +1,4 @@
-import type { Translate } from '../i18n.ts'
+import type { Translate } from '../i18n'
 
 export interface Stat {
 	label: (t: Translate) => string

@@ -1,4 +1,4 @@
-import type { Messages } from './i18n.ts'
+import type { Messages } from './i18n'
 
 export const defaultMessages: Messages = {
 	nav: {

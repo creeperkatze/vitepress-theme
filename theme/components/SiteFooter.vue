@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { FALLBACK_LOCALE } from '../../i18n.ts'
+import { FALLBACK_LOCALE } from '../../i18n'
 import HeartIcon from '../icons/heart.svg?component'
 
 const { t, te } = useI18n()

@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import type { Stat, StatsLoader } from '../stats.ts'
+import type { Stat, StatsLoader } from '../stats'
 
 const props = defineProps<{ load: StatsLoader }>()
 

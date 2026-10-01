@@ -1,7 +1,7 @@
 import { IntlMessageFormat } from 'intl-messageformat'
 import { type CompileError, createI18n, type MessageCompiler, type MessageContext } from 'vue-i18n'
 
-import { defaultMessages } from './messages.ts'
+import { defaultMessages } from './messages'
 
 export type Messages = { [key: string]: string | Messages }
 
