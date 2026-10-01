@@ -1,0 +1,66 @@
+/* eslint-disable simple-import-sort/imports */
+
+import { type Theme, useData } from 'vitepress'
+import DefaultTheme from 'vitepress/theme'
+import { type Component, defineComponent, h, type VNode, watchEffect } from 'vue'
+
+import { createSiteI18n, type Messages } from '../i18n.ts'
+import DonateButton from './components/DonateButton.vue'
+import HeroLogo from './components/HeroLogo.vue'
+import Showcase, { type ShowcaseItem } from './components/Showcase.vue'
+import SiteFooter from './components/SiteFooter.vue'
+import StatsBar from './components/StatsBar.vue'
+import type { StatsLoader } from './stats.ts'
+// Must come after the default theme so these rules win
+import './style.css'
+
+export type { Messages, Translate } from '../i18n.ts'
+export type { ShowcaseItem } from './components/Showcase.vue'
+export * from './stats.ts'
+export { DonateButton, HeroLogo, Showcase, SiteFooter, StatsBar }
+
+export interface ThemeOptions {
+	/** The same messages passed to `defineSiteConfig`. */
+	messages?: Record<string, Messages>
+	/** Donate button target, or false to hide it. Defaults to Ko-fi. */
+	donate?: string | false
+	/** Logo shown above the tagline (`meta.summary`) on the home page. */
+	logo?: Component
+	stats?: StatsLoader
+	/** Feature rows below the home features. Text comes from `meta.feature.<key>`. */
+	showcase?: ShowcaseItem[]
+	/** Extra layout slots. These replace the built-in ones of the same name. */
+	slots?: Record<string, () => VNode | VNode[]>
+	enhanceApp?: Theme['enhanceApp']
+}
+
+export function createTheme(options: ThemeOptions = {}): Theme {
+	const { donate = 'https://ko-fi.com/creeperkatze', logo, stats, showcase } = options
+	const i18n = createSiteI18n(options.messages)
+
+	const slots: Record<string, () => VNode | VNode[]> = {
+		...(donate && { 'nav-bar-content-after': () => h(DonateButton, { link: donate }) }),
+		...(logo && { 'home-hero-info-before': () => h(HeroLogo, { logo }) }),
+		...(stats && { 'home-features-before': () => h(StatsBar, { load: stats }) }),
+		...(showcase && { 'home-features-after': () => h(Showcase, { items: showcase }) }),
+		'layout-bottom': () => h(SiteFooter),
+		...options.slots,
+	}
+
+	return {
+		extends: DefaultTheme,
+		async enhanceApp(ctx) {
+			ctx.app.use(i18n)
+			await options.enhanceApp?.(ctx)
+		},
+		Layout: defineComponent({
+			setup() {
+				const { lang } = useData()
+				watchEffect(() => {
+					i18n.global.locale.value = lang.value
+				})
+				return () => h(DefaultTheme.Layout, null, slots)
+			},
+		}),
+	}
+}
