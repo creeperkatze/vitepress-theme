@@ -1,9 +1,19 @@
+<script lang="ts">
+export interface FooterLink {
+	/** Message key for the link text. */
+	key: string
+	link: string
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { FALLBACK_LOCALE } from '../../i18n'
 import HeartIcon from '../icons/heart.svg?component'
+
+defineProps<{ links: FooterLink[] }>()
 
 const { t, te } = useI18n()
 
@@ -31,6 +41,12 @@ const notAffiliated = computed(() =>
 					</template>
 				</i18n-t>
 				<template v-if="notAffiliated"> · {{ notAffiliated }}</template>
+			</p>
+			<p v-if="links.length" class="footer-text">
+				<template v-for="(item, index) in links" :key="item.link">
+					<template v-if="index"> · </template>
+					<a :href="item.link" class="footer-link">{{ t(item.key) }}</a>
+				</template>
 			</p>
 		</div>
 	</footer>

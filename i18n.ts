@@ -18,6 +18,17 @@ const messageCompiler: MessageCompiler = (message, { locale, key, onError }) => 
 	return (ctx: MessageContext) => formatter.format(ctx.values) as string
 }
 
+function hasStrings(messages: Messages): boolean {
+	return Object.values(messages).some((value) =>
+		typeof value === 'string' ? value !== '' : hasStrings(value),
+	)
+}
+
+/** Drops languages without a single translated string, since Crowdin exports empty files. */
+export function withStrings(messages: Record<string, Messages>): Record<string, Messages> {
+	return Object.fromEntries(Object.entries(messages).filter(([, value]) => hasStrings(value)))
+}
+
 function merge(base: Messages, override: Messages): Messages {
 	const result: Messages = { ...base }
 	for (const [key, value] of Object.entries(override)) {

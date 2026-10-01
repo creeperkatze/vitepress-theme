@@ -5,7 +5,13 @@ import { fileURLToPath } from 'node:url'
 import svgLoader from 'vite-svg-loader'
 import { type DefaultTheme, type LocaleConfig, mergeConfig, type UserConfig } from 'vitepress'
 
-import { createSiteI18n, FALLBACK_LOCALE, type Messages, type Translate } from './i18n'
+import {
+	createSiteI18n,
+	FALLBACK_LOCALE,
+	type Messages,
+	type Translate,
+	withStrings,
+} from './i18n'
 
 export type { Messages, Translate }
 
@@ -42,16 +48,18 @@ type Config = UserConfig<ThemeConfig>
 
 const RTL_LANGUAGES = ['ar', 'fa', 'he', 'ur']
 
-/** Reads every `<lang>.json` in a folder, keyed by `<lang>`. */
+/** Reads every `<lang>.json` in a folder, keyed by `<lang>`. Empty files are skipped. */
 export function readMessages(dir: string | URL): Record<string, Messages> {
 	const path = dir instanceof URL ? fileURLToPath(dir) : dir
-	return Object.fromEntries(
-		readdirSync(path)
-			.filter((file) => file.endsWith('.json'))
-			.map((file) => [
-				file.slice(0, -'.json'.length),
-				JSON.parse(readFileSync(join(path, file), 'utf8')) as Messages,
-			]),
+	return withStrings(
+		Object.fromEntries(
+			readdirSync(path)
+				.filter((file) => file.endsWith('.json'))
+				.map((file) => [
+					file.slice(0, -'.json'.length),
+					JSON.parse(readFileSync(join(path, file), 'utf8')) as Messages,
+				]),
+		),
 	)
 }
 
