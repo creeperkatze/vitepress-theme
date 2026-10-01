@@ -24,11 +24,20 @@ const cards = computed(() =>
 		value: stat.format ? stat.format(stat.value, locale.value) : n(stat.value),
 	})),
 )
+
+// Even counts go two per row on mid-size screens so no card is left alone on a row
+const columns = computed(() => {
+	const count = cards.value.length
+	return {
+		'--columns-sm': count % 2 === 0 ? 2 : Math.min(count, 3),
+		'--columns-lg': Math.min(count, 4),
+	}
+})
 </script>
 
 <template>
 	<div v-if="cards.length" class="stats-bar">
-		<div class="stats-grid">
+		<div class="stats-grid" :style="columns">
 			<article v-for="card in cards" :key="card.label" class="stat-card">
 				<span class="stat-value">{{ card.value }}</span>
 				<span class="stat-label">{{ card.label }}</span>
@@ -86,13 +95,17 @@ const cards = computed(() =>
 	}
 
 	.stat-card {
-		flex-basis: calc(33.333% - 11px);
+		flex-basis: calc(100% / var(--columns-sm) - 16px);
 	}
 }
 
 @media (min-width: 960px) {
 	.stats-bar {
 		padding: 0 64px 16px;
+	}
+
+	.stat-card {
+		flex-basis: calc(100% / var(--columns-lg) - 16px);
 	}
 }
 </style>

@@ -47,6 +47,11 @@ export interface ThemeOptions {
 	showcase?: ShowcaseItem[]
 	/** Screenshot size for the showcase, defaults to 1280 by 800. */
 	showcaseImageSize?: { width: number; height: number }
+	/**
+	 * `cover` crops screenshots to `showcaseImageSize`. `contain` shows screenshots of mixed
+	 * sizes whole, in a fixed-height box. Defaults to `cover`.
+	 */
+	showcaseFit?: 'cover' | 'contain'
 	/** A second footer row of links, like a privacy policy. */
 	footerLinks?: FooterLink[]
 	/** Extra layout slots. These replace the built-in ones of the same name. */
@@ -63,7 +68,12 @@ export function createTheme(options: ThemeOptions = {}): Theme {
 		...(logo && { 'home-hero-info-before': () => h(HeroLogo, { logo }) }),
 		...(stats && { 'home-features-before': () => h(StatsBar, { load: stats }) }),
 		...(showcase && {
-			'home-features-after': () => h(Showcase, { items: showcase, ...options.showcaseImageSize }),
+			'home-features-after': () =>
+				h(Showcase, {
+					items: showcase,
+					fit: options.showcaseFit,
+					...options.showcaseImageSize,
+				}),
 		}),
 		'layout-bottom': () => h(SiteFooter, { links: options.footerLinks ?? [] }),
 		...options.slots,

@@ -17,8 +17,13 @@ interface Row {
 }
 
 const props = withDefaults(
-	defineProps<{ items: ShowcaseItem[]; width?: number; height?: number }>(),
-	{ width: 1280, height: 800 },
+	defineProps<{
+		items: ShowcaseItem[]
+		width?: number
+		height?: number
+		fit?: 'cover' | 'contain'
+	}>(),
+	{ width: 1280, height: 800, fit: 'cover' },
 )
 
 const { t } = useI18n()
@@ -33,6 +38,11 @@ const rows = computed<Row[]>(() =>
 
 const active = ref<Row | null>(null)
 
+function withCode(text: string): string {
+	const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+	return escaped.replace(/`([^`]+)`/g, '<code>$1</code>')
+}
+
 function onKeydown(event: KeyboardEvent) {
 	if (event.key === 'Escape') active.value = null
 }
@@ -42,7 +52,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
-	<div class="showcase">
+	<div class="showcase" :class="fit">
 		<div class="container">
 			<div class="showcase-inner">
 				<article
@@ -58,6 +68,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 						@click="active = row"
 					>
 						<img
+							v-if="fit === 'cover'"
 							:src="row.image"
 							:alt="row.title"
 							:width="width"
@@ -66,10 +77,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 							loading="lazy"
 							decoding="async"
 						/>
+						<img v-else :src="row.image" :alt="row.title" loading="lazy" decoding="async" />
 					</button>
 					<div class="showcase-text">
 						<h3>{{ row.title }}</h3>
-						<p>{{ row.details }}</p>
+						<p v-html="withCode(row.details)"></p>
 					</div>
 				</article>
 			</div>
@@ -142,11 +154,42 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 	margin: 0;
 }
 
+.showcase-text p :deep(code) {
+	font-size: 0.85em;
+	font-family: var(--vp-font-family-mono);
+	background-color: var(--vp-c-bg-soft);
+	border-radius: 4px;
+	padding: 2px 6px;
+	color: var(--vp-c-text-1);
+}
+
+.contain .showcase-media {
+	height: 340px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	border-radius: 12px;
+	background-color: var(--vp-c-bg-soft);
+}
+
+.contain .showcase-media img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	border-radius: 8px;
+}
+
 @media (min-width: 640px) {
 	.showcase {
 		padding-top: 48px;
 		padding-left: 48px;
 		padding-right: 48px;
+	}
+
+	.contain .showcase-media {
+		height: 420px;
 	}
 }
 
