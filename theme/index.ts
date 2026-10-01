@@ -52,6 +52,8 @@ export interface ThemeOptions {
 	 * sizes whole, in a fixed-height box. Defaults to `cover`.
 	 */
 	showcaseFit?: 'cover' | 'contain'
+	/** Shows the "Made with" footer. Defaults to true. */
+	footer?: boolean
 	/** A second footer row of links, like a privacy policy. */
 	footerLinks?: FooterLink[]
 	/** Extra layout slots. These replace the built-in ones of the same name. */
@@ -75,7 +77,9 @@ export function createTheme(options: ThemeOptions = {}): Theme {
 					...options.showcaseImageSize,
 				}),
 		}),
-		'layout-bottom': () => h(SiteFooter, { links: options.footerLinks ?? [] }),
+		...(options.footer !== false && {
+			'layout-bottom': () => h(SiteFooter, { links: options.footerLinks ?? [] }),
+		}),
 		...options.slots,
 	}
 
