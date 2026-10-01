@@ -106,9 +106,11 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 	const [root, ...others] = locales
 	const rest = others.map((l) => ({ ...l, link: l.link ?? `/${l.lang.split('-')[0].toLowerCase()}/` }))
 	const keyOf = (link: string) => link.replace(/^\/|\/$/g, '')
+	const rootLocale = locale({ ...root, link: '/' })
 
 	const base: Config = {
 		title,
+		description: rootLocale.description,
 		cleanUrls: true,
 		head: [
 			['link', { rel: 'icon', type: favicon.endsWith('.svg') ? 'image/svg+xml' : 'image/png', href: favicon }],
@@ -121,7 +123,7 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 			['meta', { name: 'twitter:image', content: image }],
 		],
 		locales: {
-			root: locale({ ...root, link: '/' }),
+			root: rootLocale,
 			...Object.fromEntries(rest.map((l) => [keyOf(l.link), locale(l)])),
 		},
 		rewrites: Object.fromEntries(rest.map((l) => [`${l.lang}/:rest*`, `${keyOf(l.link)}/:rest*`])),
