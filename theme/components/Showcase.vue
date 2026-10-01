@@ -82,7 +82,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 					<div class="showcase-text">
 						<h3>{{ row.title }}</h3>
 						<p>
-							<template v-for="(segment, index) in segments(row.details)" :key="index">
+							<template v-for="(segment, part) in segments(row.details)" :key="part">
 								<code v-if="segment.code">{{ segment.text }}</code>
 								<template v-else>{{ segment.text }}</template>
 							</template>
