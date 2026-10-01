@@ -51,7 +51,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 					class="showcase-row"
 					:class="{ reverse: index % 2 === 1 }"
 				>
-					<button type="button" class="showcase-media" :aria-label="row.title" @click="active = row">
+					<button
+						type="button"
+						class="showcase-media"
+						:aria-label="row.title"
+						@click="active = row"
+					>
 						<img
 							:src="row.image"
 							:alt="row.title"

@@ -5,13 +5,7 @@ import { fileURLToPath } from 'node:url'
 import svgLoader from 'vite-svg-loader'
 import { type DefaultTheme, type LocaleConfig, mergeConfig, type UserConfig } from 'vitepress'
 
-import {
-	createSiteI18n,
-	FALLBACK_LOCALE,
-	type Messages,
-	type Translate,
-	withStrings,
-} from './i18n'
+import { createSiteI18n, FALLBACK_LOCALE, type Messages, type Translate, withStrings } from './i18n'
 
 export type { Messages, Translate }
 
@@ -140,7 +134,10 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 	}
 
 	const [root, ...others] = locales
-	const rest = others.map((l) => ({ ...l, link: l.link ?? `/${l.lang.split('-')[0].toLowerCase()}/` }))
+	const rest = others.map((l) => ({
+		...l,
+		link: l.link ?? `/${l.lang.split('-')[0].toLowerCase()}/`,
+	}))
 	const keyOf = (link: string) => link.replace(/^\/|\/$/g, '')
 	const rootLocale = locale({ ...root, link: '/' })
 
@@ -149,7 +146,14 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 		description: rootLocale.description,
 		cleanUrls: true,
 		head: [
-			['link', { rel: 'icon', type: favicon.endsWith('.svg') ? 'image/svg+xml' : 'image/png', href: favicon }],
+			[
+				'link',
+				{
+					rel: 'icon',
+					type: favicon.endsWith('.svg') ? 'image/svg+xml' : 'image/png',
+					href: favicon,
+				},
+			],
 			['meta', { property: 'og:type', content: 'website' }],
 			['meta', { property: 'og:url', content: url }],
 			['meta', { property: 'og:title', content: title }],

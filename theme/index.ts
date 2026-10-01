@@ -63,8 +63,7 @@ export function createTheme(options: ThemeOptions = {}): Theme {
 		...(logo && { 'home-hero-info-before': () => h(HeroLogo, { logo }) }),
 		...(stats && { 'home-features-before': () => h(StatsBar, { load: stats }) }),
 		...(showcase && {
-			'home-features-after': () =>
-				h(Showcase, { items: showcase, ...options.showcaseImageSize }),
+			'home-features-after': () => h(Showcase, { items: showcase, ...options.showcaseImageSize }),
 		}),
 		'layout-bottom': () => h(SiteFooter, { links: options.footerLinks ?? [] }),
 		...options.slots,
