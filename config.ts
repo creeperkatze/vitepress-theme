@@ -32,7 +32,9 @@ export interface SiteOptions {
 	socialLinks?: DefaultTheme.SocialLink[]
 }
 
-type Config = UserConfig<DefaultTheme.Config>
+export type ThemeConfig = DefaultTheme.Config & { version?: string }
+
+type Config = UserConfig<ThemeConfig>
 
 export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): Config {
 	const {
@@ -45,7 +47,7 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 	} = options
 	const i18n = createSiteI18n(options.messages)
 
-	function locale({ lang, label, link = '/' }: SiteLocale): LocaleConfig<DefaultTheme.Config>[string] {
+	function locale({ lang, label, link = '/' }: SiteLocale): LocaleConfig<ThemeConfig>[string] {
 		const t: Translate = (key, values = {}) => i18n.global.t(key, values, { locale: lang })
 		const description = t('meta.summary')
 		return {
@@ -135,6 +137,7 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 			},
 		},
 		themeConfig: {
+			version: options.version,
 			socialLinks: [
 				{ icon: 'github', link: `https://github.com/${repo}` },
 				...(options.socialLinks ?? []),

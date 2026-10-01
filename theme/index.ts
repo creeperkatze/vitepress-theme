@@ -29,6 +29,8 @@ export interface ThemeOptions {
 	stats?: StatsLoader
 	/** Feature rows below the home features. Text comes from `meta.feature.<key>`. */
 	showcase?: ShowcaseItem[]
+	/** Screenshot size for the showcase, defaults to 1280 by 800. */
+	showcaseImageSize?: { width: number; height: number }
 	/** Extra layout slots. These replace the built-in ones of the same name. */
 	slots?: Record<string, () => VNode | VNode[]>
 	enhanceApp?: Theme['enhanceApp']
@@ -42,7 +44,7 @@ export function createTheme(options: ThemeOptions = {}): Theme {
 		...(donate && { 'nav-bar-content-after': () => h(DonateButton, { link: donate }) }),
 		...(logo && { 'home-hero-info-before': () => h(HeroLogo, { logo }) }),
 		...(stats && { 'home-features-before': () => h(StatsBar, { load: stats }) }),
-		...(showcase && { 'home-features-after': () => h(Showcase, { items: showcase }) }),
+		...(showcase && { 'home-features-after': () => h(Showcase, { items: showcase, ...options.showcaseImageSize }) }),
 		'layout-bottom': () => h(SiteFooter),
 		...options.slots,
 	}

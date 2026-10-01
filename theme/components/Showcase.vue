@@ -16,7 +16,10 @@ interface Row {
 	image: string
 }
 
-const props = defineProps<{ items: ShowcaseItem[] }>()
+const props = withDefaults(
+	defineProps<{ items: ShowcaseItem[]; width?: number; height?: number }>(),
+	{ width: 1280, height: 800 },
+)
 
 const { t } = useI18n()
 
@@ -52,8 +55,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 						<img
 							:src="row.image"
 							:alt="row.title"
-							width="1280"
-							height="800"
+							:width="width"
+							:height="height"
+							:style="{ aspectRatio: `${width} / ${height}` }"
 							loading="lazy"
 							decoding="async"
 						/>
@@ -108,7 +112,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 .showcase-media img {
 	width: 100%;
-	aspect-ratio: 1280 / 800;
 	object-fit: cover;
 	border-radius: 12px;
 	background-color: var(--vp-c-bg-soft);
