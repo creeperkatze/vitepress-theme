@@ -1,13 +1,18 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import svgLoader from 'vite-svg-loader'
 import { type DefaultTheme, type LocaleConfig, mergeConfig, type UserConfig } from 'vitepress'
 
-import { createSiteI18n, type Messages, type Translate } from './i18n'
+import { createSiteI18n, FALLBACK_LOCALE, type Messages, type Translate } from './i18n'
 
 export type { Messages, Translate }
 
 export interface SiteLocale {
 	lang: string
-	label: string
+	/** Defaults to the language's own name, like `Deutsch`. */
+	label?: string
 	/** URL prefix, defaults to `/de/` for `de-DE`. The first locale is the root and ignores it. */
 	link?: string
 }
@@ -18,6 +23,7 @@ export interface SiteOptions {
 	/** GitHub repository as `owner/name`. */
 	repo: string
 	messages?: Record<string, Messages>
+	/** Defaults to every language in `messages`, with `en-US` as the root. */
 	locales?: SiteLocale[]
 	/** Shows a version menu linking to the changelog. */
 	version?: string
@@ -36,23 +42,56 @@ export type ThemeConfig = DefaultTheme.Config & { version?: string }
 
 type Config = UserConfig<ThemeConfig>
 
+const RTL_LANGUAGES = ['ar', 'fa', 'he', 'ur']
+
+/** Reads every `<lang>.json` in a folder, keyed by `<lang>`. */
+export function readMessages(dir: string | URL): Record<string, Messages> {
+	const path = dir instanceof URL ? fileURLToPath(dir) : dir
+	return Object.fromEntries(
+		readdirSync(path)
+			.filter((file) => file.endsWith('.json'))
+			.map((file) => [
+				file.slice(0, -'.json'.length),
+				JSON.parse(readFileSync(join(path, file), 'utf8')) as Messages,
+			]),
+	)
+}
+
+function nativeName(lang: string): string {
+	const base = lang.split('-')[0]
+	const name = new Intl.DisplayNames([lang], { type: 'language' }).of(base) ?? lang
+	return name.charAt(0).toLocaleUpperCase(lang) + name.slice(1)
+}
+
 export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): Config {
 	const {
 		title,
 		url,
 		repo,
-		locales = [{ lang: 'en-US', label: 'English' }],
+		messages = {},
 		image = `${url}/banner.png`,
 		favicon = '/favicon.png',
 	} = options
-	const i18n = createSiteI18n(options.messages)
+	const i18n = createSiteI18n(messages)
+	const locales = options.locales ?? [
+		{ lang: FALLBACK_LOCALE },
+		...Object.keys(messages)
+			.filter((lang) => lang !== FALLBACK_LOCALE)
+			.sort()
+			.map((lang) => ({ lang })),
+	]
 
-	function locale({ lang, label, link = '/' }: SiteLocale): LocaleConfig<ThemeConfig>[string] {
+	function locale({
+		lang,
+		label = nativeName(lang),
+		link = '/',
+	}: SiteLocale): LocaleConfig<ThemeConfig>[string] {
 		const t: Translate = (key, values = {}) => i18n.global.t(key, values, { locale: lang })
 		const description = t('meta.summary')
 		return {
 			label,
 			lang,
+			dir: RTL_LANGUAGES.includes(lang.split('-')[0]) ? 'rtl' : 'ltr',
 			link,
 			description,
 			head: [

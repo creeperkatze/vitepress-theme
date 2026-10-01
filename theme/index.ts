@@ -19,6 +19,16 @@ export type { ShowcaseItem } from './components/Showcase.vue'
 export * from './stats'
 export { DonateButton, HeroLogo, Showcase, SiteFooter, StatsBar }
 
+/** Turns `import.meta.glob('<dir>/*.json', { eager: true, import: 'default' })` into messages. */
+export function messagesFromGlob(modules: Record<string, unknown>): Record<string, Messages> {
+	return Object.fromEntries(
+		Object.entries(modules).map(([path, messages]) => [
+			path.slice(path.lastIndexOf('/') + 1, -'.json'.length),
+			messages as Messages,
+		]),
+	)
+}
+
 export interface ThemeOptions {
 	/** The same messages passed to `defineSiteConfig`. */
 	messages?: Record<string, Messages>
