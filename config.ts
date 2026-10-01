@@ -27,12 +27,10 @@ export interface SiteOptions {
 	locales?: SiteLocale[]
 	/** Shows a version menu linking to the changelog. */
 	version?: string
-	/** Crowdin project slug. Shows a translate link. */
-	crowdin?: string
 	/** Social preview image, defaults to `/banner.png`. */
 	image?: string
 	favicon?: string
-	/** Project nav items, placed before the translate link and version menu. */
+	/** Project nav items, placed before the version menu. */
 	nav?: (t: Translate, link: string) => DefaultTheme.NavItem[]
 	/** Extra social links, placed after GitHub. */
 	socialLinks?: DefaultTheme.SocialLink[]
@@ -101,15 +99,6 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 			themeConfig: {
 				nav: [
 					...(options.nav?.(t, link) ?? []),
-					...(options.crowdin
-						? [
-								{
-									text: t('nav.translate'),
-									link: `https://crowdin.com/project/${options.crowdin}`,
-									target: '_blank',
-								},
-							]
-						: []),
 					...(options.version
 						? [
 								{

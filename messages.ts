@@ -2,7 +2,6 @@ import type { Messages } from './i18n'
 
 export const defaultMessages: Messages = {
 	nav: {
-		translate: 'Translate',
 		changelog: 'Changelog',
 		donate: 'Donate',
 		donateLabel: 'Donate on Ko-fi',
