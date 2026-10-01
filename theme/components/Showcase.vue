@@ -38,9 +38,9 @@ const rows = computed<Row[]>(() =>
 
 const active = ref<Row | null>(null)
 
-function withCode(text: string): string {
-	const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-	return escaped.replace(/`([^`]+)`/g, '<code>$1</code>')
+// Backticks mark inline code, so split() puts the code parts at odd indexes
+function segments(text: string): { text: string; code: boolean }[] {
+	return text.split(/`([^`]+)`/).map((part, index) => ({ text: part, code: index % 2 === 1 }))
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -81,7 +81,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 					</button>
 					<div class="showcase-text">
 						<h3>{{ row.title }}</h3>
-						<p v-html="withCode(row.details)"></p>
+						<p>
+							<template v-for="(segment, index) in segments(row.details)" :key="index">
+								<code v-if="segment.code">{{ segment.text }}</code>
+								<template v-else>{{ segment.text }}</template>
+							</template>
+						</p>
 					</div>
 				</article>
 			</div>
