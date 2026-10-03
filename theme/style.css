@@ -14,13 +14,22 @@
 	width: 16px;
 	height: 16px;
 	flex-shrink: 0;
-	background: var(--icon) no-repeat center / contain;
-}
-
-.VPHero .actions a:is([href*='github.com'], [href*='npmjs.com'])::before {
-	background: currentColor;
+	background-color: currentColor;
 	-webkit-mask: var(--icon) no-repeat center / contain;
 	mask: var(--icon) no-repeat center / contain;
+}
+
+/* Store logos keep their own colors */
+.VPHero
+	.actions
+	a:is(
+		[href*='chromewebstore.google.com'],
+		[href*='addons.mozilla.org'],
+		[href*='microsoftedge.microsoft.com']
+	)::before {
+	background: var(--icon) no-repeat center / contain;
+	-webkit-mask: none;
+	mask: none;
 }
 
 .VPHero .actions a[href*='github.com']::before {
