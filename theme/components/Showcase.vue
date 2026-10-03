@@ -1,6 +1,5 @@
 <script lang="ts">
 export interface ShowcaseItem {
-	/** Reads `meta.feature.<key>.title` and `meta.feature.<key>.description`. */
 	key: string
 	image: string
 }
@@ -36,6 +35,16 @@ const rows = computed<Row[]>(() =>
 	})),
 )
 
+const imageSize = computed(() =>
+	props.fit === 'cover'
+		? {
+				width: props.width,
+				height: props.height,
+				style: { aspectRatio: `${props.width} / ${props.height}` },
+			}
+		: {},
+)
+
 const active = ref<Row | null>(null)
 
 // Backticks mark inline code, so split() puts the code parts at odd indexes
@@ -68,16 +77,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 						@click="active = row"
 					>
 						<img
-							v-if="fit === 'cover'"
 							:src="row.image"
 							:alt="row.title"
-							:width="width"
-							:height="height"
-							:style="{ aspectRatio: `${width} / ${height}` }"
+							v-bind="imageSize"
 							loading="lazy"
 							decoding="async"
 						/>
-						<img v-else :src="row.image" :alt="row.title" loading="lazy" decoding="async" />
 					</button>
 					<div class="showcase-text">
 						<h3>{{ row.title }}</h3>

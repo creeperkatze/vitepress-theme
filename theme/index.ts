@@ -4,7 +4,7 @@ import { type Theme, useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { type Component, defineComponent, h, type VNode, watchEffect } from 'vue'
 
-import { createSiteI18n, type Messages, withStrings } from '../i18n'
+import { createSiteI18n, langFromPath, type Messages } from '../i18n'
 import DonateButton from './components/DonateButton.vue'
 import HeroLogo from './components/HeroLogo.vue'
 import Showcase, { type ShowcaseItem } from './components/Showcase.vue'
@@ -20,43 +20,24 @@ export type { FooterLink } from './components/SiteFooter.vue'
 export * from './stats'
 export { DonateButton, HeroLogo, Showcase, SiteFooter, StatsBar }
 
-/**
- * Turns `import.meta.glob('<dir>/*.json', { eager: true, import: 'default' })` into messages.
- * Empty files are skipped.
- */
+// Takes `import.meta.glob('<dir>/*.json', { eager: true, import: 'default' })`
 export function messagesFromGlob(modules: Record<string, unknown>): Record<string, Messages> {
-	return withStrings(
-		Object.fromEntries(
-			Object.entries(modules).map(([path, messages]) => [
-				path.slice(path.lastIndexOf('/') + 1, -'.json'.length),
-				messages as Messages,
-			]),
-		),
+	return Object.fromEntries(
+		Object.entries(modules).map(([path, messages]) => [langFromPath(path), messages as Messages]),
 	)
 }
 
 export interface ThemeOptions {
-	/** The same messages passed to `defineSiteConfig`. */
 	messages?: Record<string, Messages>
-	/** Donate button target, or false to hide it. Defaults to Ko-fi. */
 	donate?: string | false
-	/** Logo shown above the tagline (`meta.summary`) on the home page. */
 	logo?: Component
 	stats?: StatsLoader
-	/** Feature rows below the home features. Text comes from `meta.feature.<key>`. */
 	showcase?: ShowcaseItem[]
-	/** Screenshot size for the showcase, defaults to 1280 by 800. */
 	showcaseImageSize?: { width: number; height: number }
-	/**
-	 * `cover` crops screenshots to `showcaseImageSize`. `contain` shows screenshots of mixed
-	 * sizes whole, in a fixed-height box. Defaults to `cover`.
-	 */
 	showcaseFit?: 'cover' | 'contain'
-	/** Shows the "Made with" footer. Defaults to true. */
 	footer?: boolean
-	/** A second footer row of links, like a privacy policy. */
 	footerLinks?: FooterLink[]
-	/** Extra layout slots. These replace the built-in ones of the same name. */
+	// Replaces the built-in slots of the same name
 	slots?: Record<string, () => VNode | VNode[]>
 	enhanceApp?: Theme['enhanceApp']
 }

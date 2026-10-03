@@ -18,15 +18,22 @@ const messageCompiler: MessageCompiler = (message, { locale, key, onError }) => 
 	return (ctx: MessageContext) => formatter.format(ctx.values) as string
 }
 
+export function langFromPath(path: string): string {
+	return path.slice(path.lastIndexOf('/') + 1, -'.json'.length)
+}
+
 function hasStrings(messages: Messages): boolean {
 	return Object.values(messages).some((value) =>
 		typeof value === 'string' ? value !== '' : hasStrings(value),
 	)
 }
 
-/** Drops languages without a single translated string, since Crowdin exports empty files. */
-export function withStrings(messages: Record<string, Messages>): Record<string, Messages> {
-	return Object.fromEntries(Object.entries(messages).filter(([, value]) => hasStrings(value)))
+// Skips the empty files Crowdin exports for untranslated languages
+export function siteLocales(messages: Record<string, Messages>): string[] {
+	const others = Object.keys(messages).filter(
+		(lang) => lang !== FALLBACK_LOCALE && hasStrings(messages[lang]),
+	)
+	return [FALLBACK_LOCALE, ...others.sort()]
 }
 
 function merge(base: Messages, override: Messages): Messages {
@@ -40,15 +47,14 @@ function merge(base: Messages, override: Messages): Messages {
 }
 
 export function createSiteI18n(messages: Record<string, Messages> = {}) {
-	const merged: Record<string, Messages> = {
-		...messages,
-		[FALLBACK_LOCALE]: merge(defaultMessages, messages[FALLBACK_LOCALE] ?? {}),
-	}
 	return createI18n({
 		messageCompiler,
 		legacy: false,
 		locale: FALLBACK_LOCALE,
 		fallbackLocale: FALLBACK_LOCALE,
-		messages: merged,
+		messages: {
+			...messages,
+			[FALLBACK_LOCALE]: merge(defaultMessages, messages[FALLBACK_LOCALE] ?? {}),
+		},
 	})
 }

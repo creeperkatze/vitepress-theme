@@ -3,14 +3,12 @@ import type { Translate } from '../i18n'
 export interface Stat {
 	label: (t: Translate) => string
 	value: number
-	/** Defaults to the locale's number format. */
 	format?: (value: number, locale: string) => string
 }
 
 export type StatsLoader = () => Promise<Stat[]>
 
-/** Reads the value from a shields.io JSON endpoint. Returns null on any failure. */
-export async function shieldsValue(url: string): Promise<number | null> {
+async function shieldsValue(url: string): Promise<number | null> {
 	try {
 		const res = await fetch(url)
 		if (!res.ok) return null
@@ -28,7 +26,6 @@ export interface BrowserStoreIds {
 	edge?: string
 }
 
-/** User counts from the Chrome, Firefox and Edge add-on stores. */
 export function browserStoreStats({ chrome, firefox, edge }: BrowserStoreIds): StatsLoader {
 	const sources: [string, string | undefined, (id: string) => string][] = [
 		['Chrome', chrome, (id) => `https://img.shields.io/chrome-web-store/users/${id}.json`],
