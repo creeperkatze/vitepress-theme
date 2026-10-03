@@ -1,23 +1,39 @@
+<script lang="ts">
+export type DonatePlatform = 'ko-fi' | 'github'
+</script>
+
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import HeartIcon from '../icons/heart.svg?component'
 
-defineProps<{ link: string }>()
+const props = defineProps<{ platform: DonatePlatform }>()
+
+const platforms = {
+	'ko-fi': { link: 'https://ko-fi.com/creeperkatze', text: 'nav.donate', label: 'nav.donateLabel' },
+	github: {
+		link: 'https://github.com/sponsors/creeperkatze',
+		text: 'nav.sponsor',
+		label: 'nav.sponsorLabel',
+	},
+}
+
+const platform = computed(() => platforms[props.platform])
 
 const { t } = useI18n()
 </script>
 
 <template>
 	<a
-		:href="link"
+		:href="platform.link"
 		target="_blank"
 		rel="noopener noreferrer"
 		class="donate-button"
-		:aria-label="t('nav.donateLabel')"
+		:aria-label="t(platform.label)"
 	>
 		<HeartIcon class="heart-icon" />
-		{{ t('nav.donate') }}
+		{{ t(platform.text) }}
 	</a>
 </template>
 

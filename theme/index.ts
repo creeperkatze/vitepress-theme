@@ -5,7 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import { type Component, defineComponent, h, type VNode, watchEffect } from 'vue'
 
 import { createSiteI18n, langFromPath, type Messages } from '../i18n'
-import DonateButton from './components/DonateButton.vue'
+import DonateButton, { type DonatePlatform } from './components/DonateButton.vue'
 import HeroLogo from './components/HeroLogo.vue'
 import Showcase, { type ShowcaseItem } from './components/Showcase.vue'
 import SiteFooter, { type FooterLink } from './components/SiteFooter.vue'
@@ -15,6 +15,7 @@ import type { StatsLoader } from './stats'
 import './style.css'
 
 export type { Messages, Translate } from '../i18n'
+export type { DonatePlatform } from './components/DonateButton.vue'
 export type { ShowcaseItem } from './components/Showcase.vue'
 export type { FooterLink } from './components/SiteFooter.vue'
 export * from './stats'
@@ -29,7 +30,7 @@ export function messagesFromGlob(modules: Record<string, unknown>): Record<strin
 
 export interface ThemeOptions {
 	messages?: Record<string, Messages>
-	donate?: string | false
+	donate?: DonatePlatform | false
 	logo?: Component
 	stats?: StatsLoader
 	showcase?: ShowcaseItem[]
@@ -43,11 +44,11 @@ export interface ThemeOptions {
 }
 
 export function createTheme(options: ThemeOptions = {}): Theme {
-	const { donate = 'https://ko-fi.com/creeperkatze', logo, stats, showcase } = options
+	const { donate = 'ko-fi', logo, stats, showcase } = options
 	const i18n = createSiteI18n(options.messages)
 
 	const slots: Record<string, () => VNode | VNode[]> = {
-		...(donate && { 'nav-bar-content-after': () => h(DonateButton, { link: donate }) }),
+		...(donate && { 'nav-bar-content-after': () => h(DonateButton, { platform: donate }) }),
 		...(logo && { 'home-hero-info-before': () => h(HeroLogo, { logo }) }),
 		...(stats && { 'home-features-before': () => h(StatsBar, { load: stats }) }),
 		...(showcase && {

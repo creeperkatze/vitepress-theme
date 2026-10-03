@@ -5,6 +5,8 @@ export const defaultMessages: Messages = {
 		changelog: 'Changelog',
 		donate: 'Donate',
 		donateLabel: 'Donate on Ko-fi',
+		sponsor: 'Sponsor',
+		sponsorLabel: 'Sponsor on GitHub',
 	},
 	theme: {
 		onThisPage: 'On this page',

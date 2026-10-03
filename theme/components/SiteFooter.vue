@@ -6,6 +6,7 @@ export interface FooterLink {
 </script>
 
 <script setup lang="ts">
+import { useSidebar } from 'vitepress/theme'
 import { useI18n } from 'vue-i18n'
 
 import { FALLBACK_LOCALE } from '../../i18n'
@@ -14,10 +15,11 @@ import HeartIcon from '../icons/heart.svg?component'
 defineProps<{ links: FooterLink[] }>()
 
 const { t, te } = useI18n()
+const { hasSidebar } = useSidebar()
 </script>
 
 <template>
-	<footer class="site-footer">
+	<footer class="site-footer" :class="{ 'has-sidebar': hasSidebar }">
 		<div class="footer-inner">
 			<p class="footer-text">
 				<i18n-t keypath="footer.madeBy" scope="global">
@@ -53,6 +55,20 @@ const { t, te } = useI18n()
 	border-top: 1px solid var(--vp-c-gutter);
 	background-color: var(--vp-c-bg);
 	padding: 32px 24px;
+}
+
+/* Keeps clear of the fixed sidebar */
+@media (min-width: 960px) {
+	.site-footer.has-sidebar {
+		padding-left: calc(var(--vp-sidebar-width) + 24px);
+	}
+}
+
+@media (min-width: 1440px) {
+	.site-footer.has-sidebar {
+		padding-right: calc((100vw - var(--vp-layout-max-width)) / 2 + 24px);
+		padding-left: calc((100vw - var(--vp-layout-max-width)) / 2 + var(--vp-sidebar-width) + 24px);
+	}
 }
 
 .footer-inner {
