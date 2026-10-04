@@ -22,17 +22,23 @@ export function langFromPath(path: string): string {
 	return path.slice(path.lastIndexOf('/') + 1, -'.json'.length)
 }
 
-function hasStrings(messages: Messages): boolean {
-	return Object.values(messages).some((value) =>
-		typeof value === 'string' ? value !== '' : hasStrings(value),
+// Share of the source strings a language needs before it is listed
+const MIN_TRANSLATED = 0.5
+
+function countStrings(messages: Messages = {}): number {
+	return Object.values(messages).reduce<number>(
+		(count, value) =>
+			count + (typeof value === 'string' ? (value === '' ? 0 : 1) : countStrings(value)),
+		0,
 	)
 }
 
-// Skips the empty files Crowdin exports for untranslated languages
 export function siteLocales(messages: Record<string, Messages>): string[] {
-	const others = Object.keys(messages).filter(
-		(lang) => lang !== FALLBACK_LOCALE && hasStrings(messages[lang]),
-	)
+	const total = countStrings(messages[FALLBACK_LOCALE])
+	const others = Object.keys(messages).filter((lang) => {
+		const translated = countStrings(messages[lang])
+		return lang !== FALLBACK_LOCALE && translated > 0 && translated >= total * MIN_TRANSLATED
+	})
 	return [FALLBACK_LOCALE, ...others.sort()]
 }
 
