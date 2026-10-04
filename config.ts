@@ -17,10 +17,16 @@ export interface SiteOptions {
 	version?: string
 	// `prefix` is empty for the root locale and like `/de` for the others
 	nav?: (t: Translate, prefix: string) => DefaultTheme.NavItem[]
+	footerLinks?: (t: Translate, prefix: string) => FooterLink[]
 	socialLinks?: DefaultTheme.SocialLink[]
 }
 
-export type ThemeConfig = DefaultTheme.Config & { version?: string }
+export interface FooterLink {
+	text: string
+	link: string
+}
+
+export type ThemeConfig = DefaultTheme.Config & { version?: string; footerLinks?: FooterLink[] }
 
 export type Config = UserConfig<ThemeConfig>
 
@@ -106,6 +112,7 @@ export function defineSiteConfig(options: SiteOptions, overrides: Config = {}): 
 					...(options.nav?.(t, prefix) ?? []),
 					...versionMenu(repo, version, t('nav.changelog')),
 				],
+				footerLinks: options.footerLinks?.(t, prefix) ?? [],
 				outline: { label: t('theme.onThisPage') },
 				returnToTopLabel: t('theme.returnToTop'),
 				sidebarMenuLabel: t('theme.menu'),

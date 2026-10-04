@@ -1,21 +1,15 @@
-<script lang="ts">
-export interface FooterLink {
-	key: string
-	link: string
-}
-</script>
-
 <script setup lang="ts">
+import { useData } from 'vitepress'
 import { useSidebar } from 'vitepress/theme'
 import { useI18n } from 'vue-i18n'
 
+import type { ThemeConfig } from '../../config'
 import { FALLBACK_LOCALE } from '../../i18n'
 import HeartIcon from '../icons/heart.svg?component'
 
-defineProps<{ links: FooterLink[] }>()
-
 const { t, te } = useI18n()
 const { hasSidebar } = useSidebar()
+const { theme } = useData<ThemeConfig>()
 </script>
 
 <template>
@@ -38,10 +32,10 @@ const { hasSidebar } = useSidebar()
 					· {{ t('footer.notAffiliated') }}
 				</template>
 			</p>
-			<p v-if="links.length" class="footer-text">
-				<template v-for="(item, index) in links" :key="item.link">
+			<p v-if="theme.footerLinks?.length" class="footer-text">
+				<template v-for="(item, index) in theme.footerLinks" :key="item.link">
 					<template v-if="index"> · </template>
-					<a :href="item.link" class="footer-link">{{ t(item.key) }}</a>
+					<a :href="item.link" class="footer-link">{{ item.text }}</a>
 				</template>
 			</p>
 		</div>

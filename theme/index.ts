@@ -8,7 +8,7 @@ import { createSiteI18n, langFromPath, type Messages } from '../i18n'
 import DonateButton, { type DonatePlatform } from './components/DonateButton.vue'
 import HeroLogo from './components/HeroLogo.vue'
 import Showcase, { type ShowcaseItem } from './components/Showcase.vue'
-import SiteFooter, { type FooterLink } from './components/SiteFooter.vue'
+import SiteFooter from './components/SiteFooter.vue'
 import StatsBar from './components/StatsBar.vue'
 import type { StatsLoader } from './stats'
 // Must come after the default theme so these rules win
@@ -17,7 +17,6 @@ import './style.css'
 export type { Messages, Translate } from '../i18n'
 export type { DonatePlatform } from './components/DonateButton.vue'
 export type { ShowcaseItem } from './components/Showcase.vue'
-export type { FooterLink } from './components/SiteFooter.vue'
 export * from './stats'
 export { DonateButton, HeroLogo, Showcase, SiteFooter, StatsBar }
 
@@ -37,7 +36,6 @@ export interface ThemeOptions {
 	showcaseImageSize?: { width: number; height: number }
 	showcaseFit?: 'cover' | 'contain'
 	footer?: boolean
-	footerLinks?: FooterLink[]
 	// Replaces the built-in slots of the same name
 	slots?: Record<string, () => VNode | VNode[]>
 	enhanceApp?: Theme['enhanceApp']
@@ -60,7 +58,7 @@ export function createTheme(options: ThemeOptions = {}): Theme {
 				}),
 		}),
 		...(options.footer !== false && {
-			'layout-bottom': () => h(SiteFooter, { links: options.footerLinks ?? [] }),
+			'layout-bottom': () => h(SiteFooter),
 		}),
 		...options.slots,
 	}
